@@ -68,4 +68,13 @@ export class Gravatar extends Entity {
   set imageUrl(value: string) {
     this.set("imageUrl", Value.fromString(value));
   }
+
+  get accepted(): boolean {
+    let value = this.get("accepted");
+    return value.toBoolean();
+  }
+
+  set accepted(value: boolean) {
+    this.set("accepted", Value.fromBoolean(value));
+  }
 }

@@ -1,6 +1,186 @@
+# Good example of a entity. 
 type Gravatar @entity {
   id: ID!
   owner: Bytes!
   displayName: String!
   imageUrl: String!
+  accepted: Boolean!
 }
+
+# Bad examples of entiies. 
+# These are structured around a event, accepted or declined. Essentialy using 2 entites and repeating data when it can be condensed into one entity like above. 
+# type GravatarAccepted @entity {
+#   id: ID!
+#   owner: Bytes
+#   displayName: String
+#   imageUrl: String
+# }
+# 
+# type GravatarDeclined @entity {
+#   id: ID!
+#   owner: Bytes
+#   displayName: String
+#   imageUrl: String
+# }
+
+#Creating enum and implementing in entity
+# Creates a enum quering for the all the owners.
+#  Input in the entity schema to query for it. 
+# 
+# enum TokenStatus {
+#     OriginalOwner
+#     SecondOwner
+#     ThirdOwner
+# }
+# 
+# type Gravatar @entity {
+#   id: ID!
+#   owner: Bytes!
+#   displayName: String!
+#   imageUrl: String!
+#   accepted: Boolean!
+#   tokenStatus: TokenStatus!
+# }
+
+
+# Creating relationships
+# One:One
+# 
+# type Transaction @entity {
+#   id: ID!
+#   transactionReceipt: TransactionReceipt
+# }
+# 
+# type TransactionReceipt @entity {
+#   id: ID!
+#   transaction: Transaction
+# }
+# 
+# One:Many
+# 
+# type Token @entity {
+#   id: ID!
+# }
+# 
+# type TokenBalance @entity {
+#   id: ID!
+#   amount: Int!
+#   token: Token!
+# }
+
+
+# Example of Revers lookup.
+# 
+# type Token @entity {
+#   id: ID!
+#   tokenBalances: [TokenBalance!]! @derivedFrom(field: "token") Makes balance of the token accessable from the token entity by deriving tokenBalances
+# }
+# 
+# type TokenBalance @entity {
+#   id: ID!
+#   amount: Int!
+#   token: Token!
+# }
+# 
+
+# Example of straight forward Many:Many relationships
+# 
+# Takes the members of each Organization and stores them in a array. 
+# type Organization @entity {
+#   id: ID!
+#   name: String!
+#   members: [User!]!
+# }
+# 
+# For each user, based on their ID, lists the organizations their a member of
+# type User @entity {
+#   id: ID!
+#   name: String!
+#   organizations: [Organization!]! @derivedFrom(field: "members")
+# }
+
+#Many:Many more performant way
+#stores through mapping table. 
+#Allows for less data stored for the subgraph. which equals faster
+#
+# Organization entity gets all users from the UserOrganization entity that are associated with it. 
+# type Organization @entity {
+#   id: ID!
+#   name: String!
+#   members: [UserOrganization]! @derivedFrom(field: "user")
+# }
+# 
+# User entity gets the organization form teh UserOrganization entity that the user is associated with
+# type User @entity {
+#   id: ID!
+#   name: String!
+#   organizations: [UserOrganization!] @derivedFrom(field: "organization")
+# }
+# 
+# UserOrganization stores 1 user and 1 organization pair
+# type UserOrganization @entity {
+#   id: ID!   # Set to `${user.id}-${organization.id}`
+#   user: User!
+#   organization: Organization!
+# }
+#query for this needs to desend one additional level. 
+# query usersWithOrganizations {
+#   users {
+#     organizations { # this is a UserOrganization entity
+#       organization {
+#         name
+#       }
+#     }
+#   }
+# }
+
+# Full text searches. 
+# 
+# Creates a fulltext search for entity band
+# type _Schema_
+#   @fulltext(
+#     name: "bandSearch",
+#     language: en
+#     algorithm: rank,      #Rank can be rank or proximityRank
+#     include: [
+#       {
+#         entity: "Band",    #Can search on name, description, bio. Based on these fields returns entities that match
+#         fields: [
+#           { name: "name" },
+#           { name: "description" },
+#           { name: "bio" },
+#         ]
+#       }
+#     ]
+#   )
+# 
+# type Band @entity {
+#     id: ID!
+#     name: String!
+#     description: String!
+#     bio: String
+#     wallet: Address
+#     labels: [Label!]!
+#     discography: [Album!]!
+#     members: [Musician!]!
+# }
+# Query for full text schema. 
+# query {
+#   bandSearch(text: "breaks & electro & detroit") {
+#     id
+#     name
+#     description
+#     wallet
+#   }
+# }
+
+
+
+
+
+
+
+
+
+
+

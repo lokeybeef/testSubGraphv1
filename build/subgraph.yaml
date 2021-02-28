@@ -1,6 +1,6 @@
 specVersion: 0.0.2
-description: Gravatar for Ethereum
-repository: https://github.com/graphprotocol/example-subgraph
+description: Gravatar for Ethereum lokeyBeef version for testing/exploring subgraphs
+repository: https://github.com/graphprotocol/example-subgraph.git
 schema:
   file: schema.graphql
 dataSources:
